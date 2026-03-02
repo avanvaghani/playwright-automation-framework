@@ -4,6 +4,24 @@ A unified **Playwright + TypeScript** test automation framework covering:
 - **UI Automation**: OrangeHRM Live Demo (Login, PIM Employee CRUD, Search, Personal Details)
 - **API Automation**: Swagger Petstore API (Pet & Store endpoints)
 
+## Notes / Instructions for Reviewers
+
+- **Assignment mapping**: Each requirement in the problem statement is mapped to concrete specs/pages:
+  - UI: `tests/ui/*.spec.ts` + POMs in `src/pages/*` (login/logout, employee create/search/edit/delete, personal details, Job Title search).
+  - API: `tests/api/pet.spec.ts` and `tests/api/store.spec.ts` (all listed Pet + Store endpoints).
+- **How to execute quickly**:
+  - Install once: `npm install` then `npx playwright install chromium`.
+  - Run **all tests**: `npm test` (runs UI + API projects).
+  - Or run **only UI**: `npm run test:ui`, **only API**: `npm run test:api`.
+- **Where to see evidence**:
+  - HTML report: `npm run report` → opens `test-results/html-report/index.html` with per-test logs, traces, screenshots, and videos for failures.
+  - Centralised logs: `logs/test-execution.log` (Winston, timestamped).
+  - Test data strategy: `src/utils/test-data.ts` (factories for login data, employees, pets, and orders).
+- **Design highlights**:
+  - Page Object Model with Playwright fixtures (`src/fixtures/page-fixtures.ts`) so specs are thin and readable.
+  - Positive/negative coverage called out by `TC-*` IDs in the tables below.
+  - Error handling & flakiness controls are encapsulated in POMs (smart waits, toast helpers, autocomplete fallbacks), keeping specs stable against the OrangeHRM demo environment.
+
 ## 📋 Tech Stack
 
 | Technology | Purpose |
