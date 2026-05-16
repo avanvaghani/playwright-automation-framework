@@ -1,5 +1,10 @@
 # Playwright Test Automation Framework
 
+[![Playwright Tests](https://github.com/avanvaghani/playwright-automation-framework/actions/workflows/playwright.yml/badge.svg)](https://github.com/avanvaghani/playwright-automation-framework/actions/workflows/playwright.yml)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+
 A unified **Playwright + TypeScript** test automation framework covering:
 - **UI Automation**: OrangeHRM Live Demo (Login, PIM Employee CRUD, Search, Personal Details)
 - **API Automation**: Swagger Petstore API (Pet & Store endpoints)
