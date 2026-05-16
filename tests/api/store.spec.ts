@@ -60,9 +60,10 @@ test.describe('Store API Endpoints', () => {
 
     test('TC-ST04: Find order with invalid ID (negative)', async ({ request }) => {
         logger.info('--- TC-ST04: Find Order - Negative ---');
-        const response = await request.get(`${BASE_URL}/store/order/99999`);
+        const invalidOrderId = Math.floor(Math.random() * 1_000_000) + 9_000_000;
+        const response = await request.get(`${BASE_URL}/store/order/${invalidOrderId}`);
         expect(response.status()).toBe(404);
-        logger.info('TC-ST04: Got 404 for non-existent order ✓');
+        logger.info(`TC-ST04: Got 404 for non-existent order ${invalidOrderId} ✓`);
     });
 
     // ─── Delete Purchase Order ─────────────────────────────────
