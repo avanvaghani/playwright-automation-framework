@@ -86,8 +86,8 @@ test.describe('Employee CRUD Operations', () => {
         await pimPage.searchByID(employee.employeeId);
         await page.waitForTimeout(2000);
 
-        // Check if "No Records Found" text is visible on the page
-        const noRecordsVisible = await page.locator('text=No Records Found').isVisible();
+        // Check if "No Records Found" text is visible (use POM method to avoid strict-mode violation)
+        const noRecordsVisible = await pimPage.isNoRecordsDisplayed();
         const rowsAfter = await pimPage.getRowCount();
         logger.info(`After delete - Rows: ${rowsAfter}, No Records visible: ${noRecordsVisible}`);
         expect(noRecordsVisible || rowsAfter === 0).toBeTruthy();

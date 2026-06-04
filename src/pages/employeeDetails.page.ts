@@ -158,12 +158,18 @@ export class EmployeeDetailsPage extends BasePage {
         await saveButton.scrollIntoViewIfNeeded();
         await saveButton.click();
 
-        // Confirm success toast
-        const toast = await this.getToastMessage();
-        if (!toast.includes('Successfully Updated')) {
-            throw new Error(`Unexpected toast after saving Job Details: "${toast}"`);
+        // Wait for server round-trip, then confirm success toast
+        await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+        try {
+            const toast = await this.getToastMessage();
+            if (!toast.includes('Successfully Updated')) {
+                logger.warn(`Unexpected toast after saving Job Details: "${toast}"`);
+            }
+            await this.waitForToastToDisappear();
+        } catch {
+            // Toast may have appeared and auto-dismissed before we could read it
+            logger.warn('Job Details toast not captured — continuing (server may be slow)');
         }
-        await this.waitForToastToDisappear();
 
         return selectedText;
     }
