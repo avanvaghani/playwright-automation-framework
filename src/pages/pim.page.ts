@@ -64,7 +64,9 @@ export class PIMPage extends BasePage {
         logger.info(`Searching employee by name: ${name}${expectedLastName ? ` (expected: ${expectedLastName})` : ''}`);
         await this.resetFilters();
         await this.employeeNameInput.click();
-        await this.employeeNameInput.fill(name);
+        // Clear any existing value and type slowly to trigger autocomplete API
+        await this.employeeNameInput.fill('');
+        await this.employeeNameInput.pressSequentially(name, { delay: 100 });
 
         // OrangeHRM uses an autocomplete widget; the dropdown is rendered inside the input group's container.
         const dropdown = this.employeeNameGroup.locator('.oxd-autocomplete-dropdown');
@@ -73,14 +75,27 @@ export class PIMPage extends BasePage {
             : dropdown.locator('.oxd-autocomplete-option').first();
 
         try {
-            await dropdown.waitFor({ state: 'visible', timeout: 5000 });
-            await optionLocator.waitFor({ state: 'visible', timeout: 5000 });
+            await dropdown.waitFor({ state: 'visible', timeout: 10000 });
+            await optionLocator.waitFor({ state: 'visible', timeout: 8000 });
             await optionLocator.click();
         } catch {
             // Fallback: keyboard selection if the DOM structure differs or suggestions are slow.
             logger.warn('Autocomplete selection not detected — falling back to keyboard selection');
-            await this.employeeNameInput.press('ArrowDown').catch(() => { });
-            await this.employeeNameInput.press('Enter').catch(() => { });
+            // Re-type with a longer delay to give the server more time
+            await this.employeeNameInput.fill('');
+            await this.page.waitForTimeout(500);
+            await this.employeeNameInput.pressSequentially(name, { delay: 200 });
+            await this.page.waitForTimeout(3000);
+            // Try clicking the first autocomplete option again
+            try {
+                const retryOption = dropdown.locator('.oxd-autocomplete-option').first();
+                await retryOption.waitFor({ state: 'visible', timeout: 5000 });
+                await retryOption.click();
+            } catch {
+                logger.warn('Autocomplete still not visible — pressing ArrowDown + Enter');
+                await this.employeeNameInput.press('ArrowDown').catch(() => { });
+                await this.employeeNameInput.press('Enter').catch(() => { });
+            }
         }
         await this.searchButton.click();
         await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => { });

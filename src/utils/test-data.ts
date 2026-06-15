@@ -41,7 +41,7 @@ export const PersonalDetails = {
     otherId: 'OTH-001',
     nationality: 'American',
     maritalStatus: 'Single',
-    dateOfBirth: '1990-15-01',
+    dateOfBirth: '1990-01-15',
     gender: 'Male',
 };
 
