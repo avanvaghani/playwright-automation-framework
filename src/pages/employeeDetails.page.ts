@@ -134,7 +134,8 @@ export class EmployeeDetailsPage extends BasePage {
 
     /**
      * Set the employee's Job Title.
-     * If `jobTitle` is omitted, selects the first non-placeholder option.
+     * If `jobTitle` is omitted, selects a known safe title ('QA Lead') or
+     * the first option whose text is long enough to avoid substring collisions.
      * Returns the selected job title text.
      */
     async setJobTitle(jobTitle?: string): Promise<string> {
@@ -146,9 +147,27 @@ export class EmployeeDetailsPage extends BasePage {
         const options = this.page.locator('.oxd-select-option');
         await options.first().waitFor({ state: 'visible', timeout: 10000 });
 
-        const option = jobTitle
-            ? options.filter({ hasText: jobTitle }).first()
-            : options.filter({ hasNotText: '-- Select --' }).first();
+        let option;
+        if (jobTitle) {
+            option = options.filter({ hasText: jobTitle }).first();
+        } else {
+            // Prefer a known stable title; fall back to the first option with
+            // a text length >= 4 characters to avoid short/ambiguous values.
+            const knownTitle = options.getByText('QA Lead', { exact: true });
+            if (await knownTitle.count() > 0) {
+                option = knownTitle.first();
+            } else {
+                const count = await options.count();
+                option = options.first(); // default fallback
+                for (let i = 0; i < count; i++) {
+                    const text = (await options.nth(i).textContent())?.trim() || '';
+                    if (text !== '-- Select --' && text.length >= 4) {
+                        option = options.nth(i);
+                        break;
+                    }
+                }
+            }
+        }
 
         const selectedText = (await option.textContent())?.trim() || jobTitle || '';
         await option.click();

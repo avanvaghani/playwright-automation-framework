@@ -104,7 +104,9 @@ export class PIMPage extends BasePage {
         logger.info(`Searching employee by Job Title: ${jobTitle}`);
         await this.resetFilters();
         await this.jobTitleDropdown.click();
-        const option = this.page.locator('.oxd-select-option', { hasText: jobTitle });
+        // Use exact text matching to prevent strict-mode violations when the
+        // title is a short string that could substring-match multiple options.
+        const option = this.page.locator('.oxd-select-option').getByText(jobTitle, { exact: true });
         await option.waitFor({ state: 'visible', timeout: 5000 });
         await option.click();
         await this.searchButton.click();

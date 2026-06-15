@@ -9,6 +9,14 @@ let testPetId: number;
 test.describe('Store API Endpoints', () => {
     test.describe.configure({ mode: 'serial' });
 
+    // Health-check: skip the entire suite when Petstore blocks CI requests
+    test.beforeAll(async ({ request }) => {
+        const health = await request.get(`${BASE_URL}/pet/1`);
+        if (health.status() === 403) {
+            test.skip(true, 'Petstore API is returning 403 — likely rate-limited from CI');
+        }
+    });
+
     // Setup: create a pet first, then use its ID for orders
     test('TC-ST00: Setup - Create a pet for order tests', async ({ request }) => {
         const pet = generatePetData();

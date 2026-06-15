@@ -54,8 +54,15 @@ export class AddEmployeePage extends BasePage {
     async saveEmployee(): Promise<void> {
         logger.info('Saving new employee');
         await this.saveButton.click();
-        // After save, we should redirect to Personal Details page
-        await this.page.waitForURL('**/viewPersonalDetails/**', { timeout: 30000 });
+        // OrangeHRM demo can be very slow — increased timeout with retry
+        try {
+            await this.page.waitForURL('**/viewPersonalDetails/**', { timeout: 45000 });
+        } catch {
+            // Retry: the first click may not have registered on a slow demo server
+            logger.warn('Save redirect not detected — retrying save click');
+            await this.saveButton.click();
+            await this.page.waitForURL('**/viewPersonalDetails/**', { timeout: 30000 });
+        }
         await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => { });
         await this.waitForPageLoad();
         logger.info('Employee saved — redirected to Personal Details');
