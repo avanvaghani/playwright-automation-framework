@@ -59,9 +59,10 @@ test.describe('Pet API Endpoints', () => {
 
     test('TC-P04: Find pet with non-existent ID (negative)', async ({ request }) => {
         logger.info('--- TC-P04: Find Pet - Negative ---');
-        const response = await request.get(`${BASE_URL}/pet/999999999`);
+        const nonExistentPetId = Math.floor(Math.random() * 900000000) + 1000000000;
+        const response = await request.get(`${BASE_URL}/pet/${nonExistentPetId}`);
         expect(response.status()).toBe(404);
-        logger.info('TC-P04: Got 404 for non-existent pet ✓');
+        logger.info(`TC-P04: Got 404 for non-existent pet ${nonExistentPetId} ✓`);
     });
 
     // ─── Update an Existing Pet ────────────────────────────────
@@ -105,9 +106,10 @@ test.describe('Pet API Endpoints', () => {
 
     test('TC-P08: Delete pet with non-existent ID (negative)', async ({ request }) => {
         logger.info('--- TC-P08: Delete Pet - Negative ---');
-        const response = await request.delete(`${BASE_URL}/pet/999999999`);
+        const nonExistentPetId = Math.floor(Math.random() * 900000000) + 1000000000;
+        const response = await request.delete(`${BASE_URL}/pet/${nonExistentPetId}`);
         const status = response.status();
         expect([200, 404]).toContain(status);
-        logger.info(`TC-P08: Response status ${status} ✓`);
+        logger.info(`TC-P08: Response status ${status} for pet ${nonExistentPetId} ✓`);
     });
 });
